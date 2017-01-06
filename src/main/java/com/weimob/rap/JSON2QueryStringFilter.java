@@ -3,6 +3,9 @@ package com.weimob.rap;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -11,6 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Enumeration;
@@ -77,11 +82,11 @@ public class JSON2QueryStringFilter implements Filter {
 
     }
 
-    public static void main(String[] args) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("/aaa/vdvd?bbb=123");
-        Map<String, String> param = new HashMap<String, String>();
-        param.put("name", "value");
-        builder.replaceQueryParam("map", param);
-        System.out.println(builder.build().toString());
+    @SuppressWarnings("Since15")
+    public static void main(String[] args) throws ScriptException, FileNotFoundException {
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+        engine.eval(new FileReader("/Users/ian/git/tmp/RAP_src/src/main/webapp/stat/js/util/mock-min.js"));
+        Object val = engine.eval("JSON.stringify(Mock.mock({\"monitorTrackId\":\"ab2571b3-569a-44d2-b36e-6e51826cce63\",\"timestamp\":function(){return new Date().getTime()},\"_merchantId\":1,\"responseVo\":{\"access_token\":\"vGC6kQrvTuSFxT9Ab7FHSuf2hFPP8JIJMjOkhWdRhJM5eK-k5DTdZZVpO2U66elcn2MwxxBuNimmuN84nF_1Lc8WYQZ6U14_8xkO6mWA3SeXn7RaIxs5aLVS8VNJQbSWUOFhAEAXRI\",\"is_bp\":0},\"successForMornitor\":true,\"processResult\":true,\"returnCode\":\"000000\"}))");
+        System.out.println(val);
     }
 }

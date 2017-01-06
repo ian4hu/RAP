@@ -17,8 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -52,9 +56,11 @@ public class MockAction extends ActionBase {
     private MockMgr mockMgr;
     private String actionData;
     private String url;
+    private ScriptEngine engine;
 
     public MockAction() {
-        System.out.println("MockAction");
+        //System.out.println("MockAction");
+        engine = new ScriptEngineManager().getEngineByName("javascript");
     }
 
     public String getActionData() {
@@ -338,6 +344,14 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
+            try {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+            } catch (ScriptException ex) {
+                logger.warn(ex);
+            }
             setContent(result);
         }
         if (isJSON) {
@@ -367,6 +381,14 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
+            try {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+            } catch (ScriptException ex) {
+                logger.warn(ex);
+            }
             setContent(result);
         }
         if (isJSON) {
@@ -393,6 +415,14 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
+            try {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+            } catch (ScriptException ex) {
+                logger.warn(ex);
+            }
             setContent(result);
         }
         if (isJSON) {
@@ -484,6 +514,14 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
+            try {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+            } catch (ScriptException ex) {
+                logger.warn(ex);
+            }
             setContent(result);
         }
 
@@ -513,6 +551,14 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
+            try {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+            } catch (ScriptException ex) {
+                logger.warn(ex);
+            }
             setContent(result);
         }
 
