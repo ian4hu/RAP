@@ -33,13 +33,13 @@
                           class="com.taobao.rigel.rap.project.bo.Page"/>
         </set>
         <set name="requestParameterList" inverse="true" cascade="delete"
-             table="tb_request_parameter_list_mapping">
+             table="tb_request_parameter_list_mapping" order-by="parameter_id asc">
             <key column="action_id" not-null="true"/>
             <many-to-many column="parameter_id"
                           class="com.taobao.rigel.rap.project.bo.Parameter"/>
         </set>
         <set name="responseParameterList" inverse="true" cascade="delete"
-             table="tb_response_parameter_list_mapping">
+             table="tb_response_parameter_list_mapping" order-by="parameter_id asc">
             <key column="action_id" not-null="true"/>
             <many-to-many column="parameter_id"
                           class="com.taobao.rigel.rap.project.bo.Parameter"/>

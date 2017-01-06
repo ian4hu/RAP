@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -57,10 +59,24 @@ public class MockAction extends ActionBase {
     private String actionData;
     private String url;
     private ScriptEngine engine;
+    private static CompiledScript mockJs;
 
     public MockAction() {
         //System.out.println("MockAction");
-        engine = new ScriptEngineManager().getEngineByName("javascript");
+        try {
+            if (mockJs == null) {
+                engine = new ScriptEngineManager().getEngineByName("javascript");
+                if (mockJs == null && engine instanceof Compilable) {
+                    Compilable compilable = (Compilable) engine;
+                    InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                        ("/stat/js/util/mock-min.js"));
+                    mockJs = compilable.compile(reader);
+                    mockJs.eval();
+                }
+            }
+        } catch (ScriptException ex) {
+            logger.warn(ex);
+        }
     }
 
     public String getActionData() {
@@ -344,16 +360,7 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
-            try {
-                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
-                    ("/stat/js/util/mock-min.js"));
-                engine.eval(reader);
-                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
-            } catch (ScriptException ex) {
-                logger.warn(ex);
-            } catch (NullPointerException ignored) {
-                // ignored
-            }
+            result = serverMock(result);
             setContent(result);
         }
         if (isJSON) {
@@ -383,16 +390,7 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
-            try {
-                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
-                    ("/stat/js/util/mock-min.js"));
-                engine.eval(reader);
-                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
-            } catch (ScriptException ex) {
-                logger.warn(ex);
-            } catch (NullPointerException ignored) {
-                // ignored
-            }
+            result = serverMock(result);
             setContent(result);
         }
         if (isJSON) {
@@ -419,16 +417,7 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
-            try {
-                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
-                    ("/stat/js/util/mock-min.js"));
-                engine.eval(reader);
-                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
-            } catch (ScriptException ex) {
-                logger.warn(ex);
-            } catch (NullPointerException ignored) {
-                // ignored
-            }
+            result = serverMock(result);
             setContent(result);
         }
         if (isJSON) {
@@ -520,16 +509,7 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
-            try {
-                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
-                    ("/stat/js/util/mock-min.js"));
-                engine.eval(reader);
-                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
-            } catch (ScriptException ex) {
-                logger.warn(ex);
-            } catch (NullPointerException ignored) {
-                // ignored
-            }
+            result = serverMock(result);
             setContent(result);
         }
 
@@ -559,16 +539,7 @@ public class MockAction extends ActionBase {
             setContent(_c + "(" + result + ")");
         } else {
             isJSON = true;
-            try {
-                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
-                    ("/stat/js/util/mock-min.js"));
-                engine.eval(reader);
-                result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
-            } catch (ScriptException ex) {
-                logger.warn(ex);
-            } catch (NullPointerException ignored) {
-                // ignored
-            }
+            result = serverMock(result);
             setContent(result);
         }
 
@@ -648,5 +619,26 @@ public class MockAction extends ActionBase {
         setContent(mockMgr.getMockRuleFromActionAndRule(null, action));
 
         return SUCCESS;
+    }
+
+    private String serverMock(String result) {
+
+        if (engine == null && mockJs == null) {
+            return result;
+        }
+
+        try {
+            if (mockJs != null) {
+                engine = mockJs.getEngine();
+            } else {
+                InputStreamReader reader = new InputStreamReader(ServletActionContext.getServletContext().getResourceAsStream
+                    ("/stat/js/util/mock-min.js"));
+                engine.eval(reader);
+            }
+            return engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
+        } catch (ScriptException ex) {
+            logger.warn(ex);
+        }
+        return result;
     }
 }
