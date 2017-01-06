@@ -24,6 +24,10 @@ import java.util.regex.Pattern;
 
 public class MockMgrImpl implements MockMgr {
 
+    public MockMgrImpl() {
+        System.out.println("MockMgrImpl");
+    }
+
     interface Callback {
         void onSuccess(String result);
     }

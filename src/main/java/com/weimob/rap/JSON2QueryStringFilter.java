@@ -31,17 +31,20 @@ public class JSON2QueryStringFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (servletRequest instanceof HttpServletRequest && servletResponse instanceof HttpServletResponse) {
-            doFilterInteral((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
+            doFilterInternal((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void doFilterInteral(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+    private void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String httpMethod = request.getMethod();
-        if (!("POST".equals(httpMethod) || "PUT".equals(httpMethod))) {
+        if (request.getAttribute(JSON2QueryStringFilter.class.getName() + ".processed") != null ||
+            !("POST".equals(httpMethod) || "PUT".equals(httpMethod))
+            ) {
             filterChain.doFilter(request, response);
             return;
         }
+        request.setAttribute(JSON2QueryStringFilter.class.getName() + ".processed", true);
         List<MediaType> types = MediaType.parseMediaTypes(request.getHeader("Content-Type"));
         MediaType.sortBySpecificityAndQuality(types);
 

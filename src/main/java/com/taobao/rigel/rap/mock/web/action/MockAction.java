@@ -1,8 +1,8 @@
 package com.taobao.rigel.rap.mock.web.action;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.taobao.rigel.rap.common.base.ActionBase;
-import com.taobao.rigel.rap.common.utils.HTTPUtils;
 import com.taobao.rigel.rap.common.utils.StringUtils;
 import com.taobao.rigel.rap.common.utils.SystemVisitorLog;
 import com.taobao.rigel.rap.mock.service.MockMgr;
@@ -13,12 +13,22 @@ import com.taobao.rigel.rap.project.bo.Project;
 import com.taobao.rigel.rap.project.service.ProjectMgr;
 import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
+import org.springframework.http.MediaType;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class MockAction extends ActionBase {
@@ -42,6 +52,10 @@ public class MockAction extends ActionBase {
     private MockMgr mockMgr;
     private String actionData;
     private String url;
+
+    public MockAction() {
+        System.out.println("MockAction");
+    }
 
     public String getActionData() {
         return actionData;
@@ -177,7 +191,9 @@ public class MockAction extends ActionBase {
      * @param pattern
      */
     public void setPattern(String pattern) {
-        this.pattern = pattern;
+        if (this.pattern == null) {
+            this.pattern = rewritePattern(pattern);
+        }
     }
 
     public String createData() throws UnsupportedEncodingException {
@@ -204,6 +220,103 @@ public class MockAction extends ActionBase {
             return "json";
         } else {
             return SUCCESS;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String rewritePattern(String pattern) {
+        Set<String> blackProps = new HashSet<String>();
+        blackProps.add("__id__");
+        blackProps.add("callback");
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String method = request.getMethod();
+        if (!"POST".equals(method) && !"POST".equals("PUT")) {
+            return pattern;
+        }
+        // rebuild pattern
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(pattern);
+        List<MediaType> types = MediaType.parseMediaTypes(request.getHeader("Content-Type"));
+        MediaType.sortBySpecificityAndQuality(types);
+        for (MediaType type : types) {
+            if (type.isCompatibleWith(MediaType.APPLICATION_FORM_URLENCODED)) {
+                // POST
+                Enumeration<String> names = (Enumeration<String>) request.getParameterNames();
+                while (names.hasMoreElements()) {
+                    String name = names.nextElement();
+                    if (blackProps.contains(name)) {
+                        continue;
+                    }
+                    List<String> vals = new ArrayList<String>();
+                    vals.addAll(Arrays.asList(request.getParameterValues(name)));
+                    if ("pattern".equals(name)) {
+                        vals.remove(pattern);
+                        if (vals.isEmpty()) {
+                            continue;
+                        }
+                    }
+                    builder.replaceQueryParam(name, (Object[]) vals.toArray());
+                }
+                return builder.build().toString();
+            }
+            if (type.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+                try {
+                    String content = StreamUtils.copyToString(request.getInputStream(), Charset.forName("utf-8"));
+                    Gson gson = new GsonBuilder().create();
+                    Map<String, Object> map = gson.fromJson(content, Map.class);
+                    Map<String, String> params = resolveMap(map);
+                    for (Map.Entry<String, String> entry : params.entrySet()) {
+                        builder.replaceQueryParam(entry.getKey(), entry.getValue());
+                    }
+                    return builder.build().toString();
+                } catch (IOException ex) {
+                    break;
+                }
+            }
+        }
+        return pattern;
+    }
+
+    private Map<String, String> resolveMap(Map<String, Object> map) {
+        Map<String, String> params = new HashMap<String, String>();
+        resolveObject(map, "", params);
+        return params;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resolveObject(Object val, String prefix, Map<String, String> output) {
+        if (val instanceof Map) {
+            resolveMap((Map<String, Object>) val, prefix, output);
+        } else if (val instanceof List) {
+            resolveList((List<Object>) val, prefix, output);
+        } else {
+            if (val != null) {
+                output.put(prefix, val.toString());
+            } else {
+                output.put(prefix, null);
+            }
+        }
+    }
+
+    private void resolveList(List<Object> list, String prefix, Map<String, String> output) {
+        for (int i = 0; i < list.size(); i++) {
+            String pref = prefix + "[" + i + "]";
+            Object val = list.get(i);
+            resolveObject(val, pref, output);
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void resolveMap(Map<String, Object> map, String prefix, Map<String, String> output) {
+        String newPrefix = prefix;
+        if (!org.springframework.util.StringUtils.isEmpty(newPrefix)) {
+            newPrefix += ".";
+        }
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String name = entry.getKey();
+            String pref = newPrefix + name;
+            Object val = entry.getValue();
+            resolveObject(val, pref, output);
         }
     }
 
