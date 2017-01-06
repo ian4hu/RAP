@@ -390,6 +390,8 @@ public class MockAction extends ActionBase {
                 result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
             } catch (ScriptException ex) {
                 logger.warn(ex);
+            } catch (NullPointerException ignored) {
+                // ignored
             }
             setContent(result);
         }
@@ -424,6 +426,8 @@ public class MockAction extends ActionBase {
                 result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
             } catch (ScriptException ex) {
                 logger.warn(ex);
+            } catch (NullPointerException ignored) {
+                // ignored
             }
             setContent(result);
         }
@@ -523,6 +527,8 @@ public class MockAction extends ActionBase {
                 result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
             } catch (ScriptException ex) {
                 logger.warn(ex);
+            } catch (NullPointerException ignored) {
+                // ignored
             }
             setContent(result);
         }
@@ -560,6 +566,8 @@ public class MockAction extends ActionBase {
                 result = engine.eval("JSON.stringify(Mock.mock(" + result + "))").toString();
             } catch (ScriptException ex) {
                 logger.warn(ex);
+            } catch (NullPointerException ignored) {
+                // ignored
             }
             setContent(result);
         }
