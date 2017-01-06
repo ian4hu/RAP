@@ -23,7 +23,8 @@
         <property name="mockData">
             <column name="mock_data"/>
         </property>
-        <set name="parameterList" inverse="true" table="tb_complex_parameter_list_mapping" cascade="delete">
+        <set name="parameterList" inverse="true" table="tb_complex_parameter_list_mapping" order-by="parameter_id "
+             cascade="delete">
             <key column="complex_parameter_id" not-null="true"/>
             <many-to-many column="parameter_id" class="com.taobao.rigel.rap.project.bo.Parameter"/>
         </set>
