@@ -100,8 +100,9 @@
                     <li><a href="$platformUrl.study" target="_blank">教程
                         <!-- <span style="color:yellow;"> (new)</span> -->
                     </a></li>
-                    <li><a id="jobHref" href="https://github.com/thx/RAP/issues/363" target="_blank" style="color:yellow;">招聘
-                    </a></li>
+                    <!-- <li><a id="jobHref" href="https://github.com/thx/RAP/issues/363" target="_blank"
+                            style="color:yellow;">招聘
+                    </a></li> -->
                     #if($isLogined)
                         <li>
                             <div class="search-project-con">
