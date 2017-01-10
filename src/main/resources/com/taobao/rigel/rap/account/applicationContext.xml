@@ -3,11 +3,16 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-    <bean id="accountMgr"
-          class="com.taobao.rigel.rap.account.service.impl.AccountMgrImpl">
-        <property name="accountDao" ref="accountDao"/>
-        <property name="organizationMgr" ref="organizationMgr"/>
-        <property name="projectMgr" ref="projectMgr"/>
+    <bean id="accountMgr" class="com.taobao.rigel.rap.account.service.impl.LdapPluggedAccountMgr">
+        <property name="delegate">
+            <bean class="com.taobao.rigel.rap.account.service.impl.AccountMgrImpl">
+                <property name="accountDao" ref="accountDao"/>
+                <property name="organizationMgr" ref="organizationMgr"/>
+                <property name="projectMgr" ref="projectMgr"/>
+            </bean>
+        </property>
+        <property name="serverUrl" value="${ldap.server}"/>
+        <property name="baseDn" value="${ldap.baseDn}"/>
     </bean>
     <bean id="accountDao" class="com.taobao.rigel.rap.account.dao.impl.AccountDaoImpl"
           parent="baseDao"/>
