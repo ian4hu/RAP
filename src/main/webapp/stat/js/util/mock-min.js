@@ -96,7 +96,7 @@
                 return Math.random() >= .5;
             },
             bool: function(min, max, cur) {
-                return this.boolean(min, max, cur);
+                return this['boolean'](min, max, cur);
             },
             natural: function(min, max) {
                 min = typeof min !== "undefined" ? parseInt(min, 10) : 0;
@@ -1561,7 +1561,7 @@
         Mock4XTpl.conditionalOrExpression = Util.noop;
         Mock4XTpl.string = Util.noop;
         Mock4XTpl.number = Util.noop;
-        Mock4XTpl.boolean = Util.noop;
+        Mock4XTpl['boolean'] = Util.noop;
         Mock4XTpl.hash = function(node, context, options, helpers, partials, other) {
             var pairs = node.value, key;
             for (key in pairs) {
