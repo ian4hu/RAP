@@ -13,6 +13,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class LdapPluggedAccountMgr implements AccountMgr {
             exists.setEmail(user.getEmail());
             exists.setName(user.getName());
             exists.setEmpId(user.getEmpId());
+            exists.setLastLoginDate(new Date());
             updateUser(user);
             return true;
         }
