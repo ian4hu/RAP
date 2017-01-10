@@ -109,14 +109,14 @@
                 return Math.round(Math.random() * (max - min)) + min;
             },
             "int": function(min, max) {
-                return this.integer(min, max);
+                return this['integer'](min, max);
             },
             "float": function(min, max, dmin, dmax) {
                 dmin = dmin === undefined ? 0 : dmin;
                 dmin = Math.max(Math.min(dmin, 17), 0);
                 dmax = dmax === undefined ? 17 : dmax;
                 dmax = Math.max(Math.min(dmax, 17), 0);
-                var ret = this.integer(min, max) + ".";
+                var ret = this['integer'](min, max) + ".";
                 for (var i = 0, dcount = this.natural(dmin, dmax); i < dcount; i++) {
                     ret += this.character("number");
                 }
@@ -734,7 +734,7 @@
     };
     Handle.rule = function(name) {
         name = (name || "") + "";
-        var parameters = (name || "").match(rkey), range = parameters && parameters[3] && parameters[3].match(rrange), min = range && parseInt(range[1], 10), max = range && parseInt(range[2], 10), count = range ? !range[2] && parseInt(range[1], 10) || Random.integer(min, max) : 1, decimal = parameters && parameters[4] && parameters[4].match(rrange), dmin = decimal && parseInt(decimal[1], 10), dmax = decimal && parseInt(decimal[2], 10), dcount = decimal ? !decimal[2] && parseInt(decimal[1], 10) || Random.integer(dmin, dmax) : 0, point = parameters && parameters[4];
+        var parameters = (name || "").match(rkey), range = parameters && parameters[3] && parameters[3].match(rrange), min = range && parseInt(range[1], 10), max = range && parseInt(range[2], 10), count = range ? !range[2] && parseInt(range[1], 10) || Random['integer'](min, max) : 1, decimal = parameters && parameters[4] && parameters[4].match(rrange), dmin = decimal && parseInt(decimal[1], 10), dmax = decimal && parseInt(decimal[2], 10), dcount = decimal ? !decimal[2] && parseInt(decimal[1], 10) || Random['integer'](dmin, dmax) : 0, point = parameters && parameters[4];
         return {
             parameters: parameters,
             range: range,
@@ -1191,7 +1191,7 @@
             }
             if (node.program) {
                 if (Util.type(currentContext) === "array") {
-                    len = val.length || Random.integer(3, 7);
+                    len = val.length || Random['integer'](3, 7);
                     for (i = 0; i < len; i++) {
                         currentContext.push(typeof val[i] !== "undefined" ? val[i] : {});
                         options.__path.push("[]");
@@ -1487,7 +1487,7 @@
             var currentContext = context[0], mocked, i, len;
             if (Util.type(currentContext) === "array") {
                 mocked = this.val(options.__path[options.__path.length - 1], options, context);
-                len = mocked && mocked.length || Random.integer(3, 7);
+                len = mocked && mocked.length || Random['integer'](3, 7);
                 for (i = 0; i < len; i++) {
                     currentContext.push(mocked && mocked[i] !== undefined ? mocked[i] : {});
                     options.__path.push(i);
@@ -1543,12 +1543,12 @@
         Mock4XTpl.multiplicativeExpression = Mock4XTpl.additiveExpression = function(node, context, options, helpers, partials, other) {
             this.gen(node.op1, context, options, helpers, partials, Util.extend({}, other, {
                 def: function() {
-                    return node.op2.type === "number" ? node.op2.value.indexOf(".") > -1 ? Random.float(-Math.pow(10, 10), Math.pow(10, 10), 1, Math.pow(10, 6)) : Random.integer() : undefined;
+                    return node.op2.type === "number" ? node.op2.value.indexOf(".") > -1 ? Random['float'](-Math.pow(10, 10), Math.pow(10, 10), 1, Math.pow(10, 6)) : Random['integer']() : undefined;
                 }()
             }));
             this.gen(node.op2, context, options, helpers, partials, Util.extend({}, other, {
                 def: function() {
-                    return node.op1.type === "number" ? node.op1.value.indexOf(".") > -1 ? Random.float(-Math.pow(10, 10), Math.pow(10, 10), 1, Math.pow(10, 6)) : Random.integer() : undefined;
+                    return node.op1.type === "number" ? node.op1.value.indexOf(".") > -1 ? Random['float'](-Math.pow(10, 10), Math.pow(10, 10), 1, Math.pow(10, 6)) : Random['integer']() : undefined;
                 }()
             }));
         };
