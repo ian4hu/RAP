@@ -69,7 +69,8 @@ public class LdapPluggedAccountMgr implements AccountMgr {
             exists.setName(user.getName());
             exists.setEmpId(user.getEmpId());
             exists.setLastLoginDate(new Date());
-            updateUser(user);
+            //exists.setPassword("RESERVED");
+            updateUser(exists);
             return true;
         }
 
