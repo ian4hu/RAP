@@ -198,7 +198,8 @@
                 <version>1.4.17</version>
                 <configuration>
                     <containerId>tomcat8x</containerId>
-                    <containerUrl>http://apache.dataguru.cn/tomcat/tomcat-8/v8.0.30/bin/apache-tomcat-8.0.30.tar.gz</containerUrl>
+                    <containerUrl>http://apache.dataguru.cn/tomcat/tomcat-8/v8.0.30/bin/apache-tomcat-8.0.30.tar.gz
+                    </containerUrl>
                     <deployables>
                         <deployable>
                             <groupId>${project.groupId}</groupId>
@@ -213,4 +214,14 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>aliyun</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>weimob</id>
+            <url>http://qc-maven.weimob.com/content/groups/public/</url>
+        </repository>
+    </repositories>
 </project>
