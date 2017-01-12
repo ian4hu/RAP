@@ -30,7 +30,7 @@
         </div>
         <div class="form-group">
             <label for="kaptcha">验证码</label>
-            <input name="kaptcha" class="form-control" type="text" value="" placeholder="请输入验证码"/>
+            <input name="kaptcha" autocomplete="false" class="form-control" type="text" value="" placeholder="请输入验证码"/>
             <img src="/Kaptcha.jpg" onclick="this.src='/Kaptcha.jpg?' + Math.random()" style="margin-top: 5px;">
         </div>
         #if ($errMsg && $errMsg != "")
